@@ -1,0 +1,56 @@
+Please refine and complete this car boot sale listing platform for UK users. I’d like you to ensure the following features and improvements are implemented cleanly, with good UX and accessibility. Use clean code, structured folders, and prioritise maintainability.
+
+GENERAL REQUIREMENTS:
+	•	Framework: React (frontend), Express or Flask (backend), PostgreSQL or Replit DB
+	•	Styling: Keep the modern, clean look already built, improve spacing and labels where needed
+	•	Logged-in users should be able to manage their listings
+
+FEATURES TO IMPLEMENT/REFINE:
+
+✅ Homepage Search
+	•	Search by town/postcode using autocomplete
+	•	Allow users to adjust search radius (5–50 miles)
+	•	Date picker and day filter
+	•	Results must dynamically match based on location using coordinates or Postcode.io
+	•	Include weather for each listing (use OpenWeather API)
+
+✅ List Your Sale Page
+Add/ensure the following fields are present:
+	•	Event Name
+	•	Town/City
+	•	Full Address (geocoded for maps)
+	•	Day of the week (dropdown)
+	•	Start time & End time
+	•	Price per car (£)
+	•	Price per van (£)
+	•	Free parking (checkbox)
+	•	Venue type (Indoor / Outdoor / Both)
+	•	On-site catering (checkbox)
+	•	Toilets available (checkbox)
+	•	Pets allowed (checkbox)
+	•	“Other information” box (for rules, payment types etc.)
+	•	Upload up to 2 images for free
+	•	Premium option (£4.99) unlocks up to 10 images and gives “Featured” visibility
+	•	Add toggle: “Feature this listing in my local area for £5”
+	•	Social media link (optional)
+	•	Email (required)
+	•	Phone number (optional, for SMS confirmation)
+	•	Show terms: 1 listing per week for free accounts
+
+✅ After Submission / Dashboard
+	•	Listings should be tied to the user account
+	•	Logged-in users should see: “My Listings”, with edit and delete buttons
+	•	Add a tick badge “✅ Confirmed for this weekend”
+	•	2 days before the event, email user asking to confirm
+	•	If they confirm, show ✅
+	•	If they don’t, remove badge or mark “Awaiting Confirmation”
+
+✅ Other Features
+	•	All addresses listed should link to Google Maps
+	•	Add pricing table for Free vs Premium plan
+	•	Login / Register system using sessions or JWT
+	•	Send confirmation emails using SendGrid or SMTP
+
+✅ Later Options (Just Plan These)
+	•	Consider letting users upgrade listings via Stripe or PayPal
+	•	Optional admin dashboard (to verify or remove bad listings)
