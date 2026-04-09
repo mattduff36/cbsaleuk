@@ -1,28 +1,73 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import {
+  deleteMockListing,
+  getMockListing,
+  updateMockListing,
+} from "@/lib/mock-db";
+import { getCurrentUser } from "@/lib/auth-service";
 
-// Stub: Return 404 for specific listing
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
-  return NextResponse.json(
-    { message: `Listing ${params.id} not found - database not connected` },
-    { status: 404 }
-  );
+  const listing = getMockListing(params.id);
+
+  if (!listing) {
+    return NextResponse.json(
+      { message: `Listing ${params.id} was not found.` },
+      { status: 404 },
+    );
+  }
+
+  return NextResponse.json(listing);
 }
 
-// Stub: Return 501 for updating listings
-export async function PATCH() {
-  return NextResponse.json(
-    { message: 'Updating listings not available yet - database not connected' },
-    { status: 501 }
-  );
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ message: "Please sign in first." }, { status: 401 });
+  }
+
+  try {
+    const listing = updateMockListing(
+      Number(params.id),
+      user.id,
+      await request.json(),
+    );
+    return NextResponse.json(listing);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error ? error.message : "Unable to update listing.",
+      },
+      { status: 400 },
+    );
+  }
 }
 
-// Stub: Return 501 for deleting listings
-export async function DELETE() {
-  return NextResponse.json(
-    { message: 'Deleting listings not available yet - database not connected' },
-    { status: 501 }
-  );
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ message: "Please sign in first." }, { status: 401 });
+  }
+
+  try {
+    deleteMockListing(Number(params.id), user.id);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error ? error.message : "Unable to delete listing.",
+      },
+      { status: 400 },
+    );
+  }
 }

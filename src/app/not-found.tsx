@@ -3,16 +3,20 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center px-4">
-        <h1 className="font-heading text-6xl font-bold text-gray-900 mb-4">404</h1>
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Page Not Found</h2>
-        <p className="text-gray-600 mb-8 max-w-md mx-auto">
-          Sorry, we couldn&apos;t find the page you&apos;re looking for. 
-          It might have been moved or doesn&apos;t exist.
+    <div className="px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl rounded-[2rem] border border-brand-brown/10 bg-white p-10 text-center shadow-field">
+        <h1 className="font-heading text-7xl font-semibold text-brand-ink">404</h1>
+        <h2 className="mt-4 font-heading text-3xl text-brand-ink">
+          That field is not on today&apos;s map
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-brand-brown/80">
+          The page you were looking for has moved, expired, or never made it through the
+          early-morning setup.
         </p>
         <Link href="/">
-          <Button>Return Home</Button>
+          <Button className="mt-8 rounded-full bg-brand-ink text-white hover:bg-brand-brown">
+            Return home
+          </Button>
         </Link>
       </div>
     </div>

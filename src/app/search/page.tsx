@@ -1,81 +1,81 @@
-"use client";
-
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import Layout from "@/components/layout";
+import type { Metadata } from "next";
 import ListingCard from "@/components/listing-card";
-import { Card, CardContent } from "@/components/ui/card";
-import { CarBootSale } from "@/types";
+import { SearchMapPanel } from "@/components/search-map-panel";
+import { searchListings } from "@/lib/data";
 
-function SearchContent() {
-  const searchParams = useSearchParams();
-  const location = searchParams.get('location') || '';
-  const radius = searchParams.get('radius') || '10';
+type SearchPageProps = {
+  searchParams: {
+    location?: string;
+    radius?: string;
+    dayOfWeek?: string;
+    lat?: string;
+    lng?: string;
+  };
+};
 
-  const { data: results, isLoading } = useQuery<CarBootSale[]>({
-    queryKey: ['/api/search', { location, radius }],
-    enabled: !!location,
+export async function generateMetadata({
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
+  const location = searchParams.location || "the UK";
+
+  return {
+    title: `Car Boot Sales near ${location}`,
+    description: `Search car boot sales near ${location} with practical listing details, verified organisers, and premium featured results.`,
+  };
+}
+
+export default async function SearchResults({ searchParams }: SearchPageProps) {
+  const location = searchParams.location || "United Kingdom";
+  const radius = Number(searchParams.radius || "25");
+  const lat = searchParams.lat ? Number(searchParams.lat) : undefined;
+  const lng = searchParams.lng ? Number(searchParams.lng) : undefined;
+  const dayOfWeek = searchParams.dayOfWeek;
+
+  const results = await searchListings({
+    location,
+    radius,
+    dayOfWeek,
+    lat,
+    lng,
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="font-heading text-3xl font-bold text-gray-900 mb-6">
-        {location ? `Car Boot Sales near ${location}` : 'Search Car Boot Sales'}
-      </h1>
-
-      {!location && (
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">Enter a location to search for car boot sales near you.</p>
-        </div>
-      )}
-
-      {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Card key={index} className="overflow-hidden">
-              <div className="h-48 bg-gray-200 animate-pulse" />
-              <CardContent className="p-4">
-                <div className="h-6 bg-gray-200 rounded animate-pulse mb-2 w-3/4" />
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {results && results.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {results.map((sale) => (
-            <ListingCard key={sale.id} sale={sale} />
-          ))}
-        </div>
-      ) : location && !isLoading ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600">No car boot sales found in this area.</p>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-export default function SearchResults() {
-  return (
-    <Layout>
-      <Suspense fallback={
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-10 bg-gray-200 rounded w-1/3 mb-6" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-64 bg-gray-200 rounded" />
-              ))}
-            </div>
+    <section className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 rounded-[2rem] border border-brand-brown/10 bg-white/80 p-8 shadow-[0_20px_55px_rgba(35,23,16,0.07)]">
+          <div className="text-xs uppercase tracking-[0.18em] text-brand-brown/60">
+            Search results
           </div>
+          <h1 className="font-heading mt-3 text-4xl font-semibold text-brand-ink sm:text-5xl">
+            Car boot sales near {location}
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-brand-brown/80">
+            {results.length} listings matched within {radius} miles
+            {dayOfWeek && dayOfWeek !== "all" ? ` for ${dayOfWeek}` : ""}.
+            Featured and verified organisers are weighted to the top.
+          </p>
         </div>
-      }>
-        <SearchContent />
-      </Suspense>
-    </Layout>
+
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+          <div className="space-y-6">
+            {results.length > 0 ? (
+              results.map((sale) => <ListingCard key={sale.id} sale={sale} />)
+            ) : (
+              <div className="glass-card p-8">
+                <h2 className="font-heading text-3xl text-brand-ink">
+                  No live sales matched that search
+                </h2>
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-brand-brown/80">
+                  Try a broader town or city, increase the radius, or remove the day filter
+                  to widen the field.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <SearchMapPanel location={location} lat={lat} lng={lng} results={results} />
+        </div>
+      </div>
+    </section>
   );
 }

@@ -1,25 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Layout from "@/components/layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { Crown, Check, AlertCircle } from "lucide-react";
+import { Check, Crown } from "lucide-react";
 
 export default function Subscribe() {
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast({
         title: "Login Required",
         description: "Please log in to upgrade to Premium.",
-        variant: "default",
       });
       router.push("/login");
     }
@@ -36,76 +35,88 @@ export default function Subscribe() {
   }, [user, router, toast]);
 
   if (isLoading) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <p>Loading...</p>
-        </div>
-      </Layout>
-    );
+    return <div className="px-4 py-16 text-center">Loading premium plan...</div>;
   }
 
   if (!isAuthenticated || user?.isPremium) {
     return null;
   }
 
+  const handleCheckout = async () => {
+    setIsCheckoutLoading(true);
+    try {
+      const response = await fetch("/api/stripe/checkout", { method: "POST" });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to start checkout.");
+      }
+      window.location.href = data.url;
+    } catch (error) {
+      toast({
+        title: "Checkout failed",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+      setIsCheckoutLoading(false);
+    }
+  };
+
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="text-center mb-8">
-          <Crown className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-          <h1 className="font-heading text-3xl font-bold text-gray-900 mb-2">
-            Upgrade to Premium
+    <section className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl space-y-8">
+        <div className="glass-card p-8 text-center">
+          <Crown className="mx-auto h-12 w-12 text-brand-green" />
+          <h1 className="font-heading mt-4 text-5xl font-semibold text-brand-ink">
+            Premium organiser listing
           </h1>
-          <p className="text-gray-600">
-            Unlock all features and grow your car boot sale
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-brand-brown/80">
+            A £25 yearly upgrade that unlocks richer storytelling, organiser trust signals,
+            event announcements, and stronger placement within the marketplace.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Premium Features</CardTitle>
-              <CardDescription>Everything you need for success</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
+        <div className="grid gap-8 md:grid-cols-2">
+          <Card className="border-brand-brown/10 bg-white shadow-field">
+            <CardContent className="space-y-4 p-8">
+              <div className="text-xs uppercase tracking-[0.18em] text-brand-brown/60">
+                Included
+              </div>
               {[
-                "Unlimited listings",
-                "Up to 10 images per listing",
-                "Featured placement in search",
-                "Event announcements",
-                "Priority support",
+                "Premium badge and richer profile design",
+                "Multiple images and social links",
+                "Event announcement module",
+                "Subscription-backed upgrade path",
+                "Admin review and verification workflow",
               ].map((feature) => (
-                <div key={feature} className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-green-500" />
+                <div key={feature} className="flex items-center gap-3 text-sm text-brand-brown/85">
+                  <Check className="h-4 w-4 text-brand-green" />
                   <span>{feature}</span>
                 </div>
               ))}
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-3xl">£25/year</CardTitle>
-              <CardDescription>Just £2.08 per month</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg mb-4">
-                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-amber-800">Coming Soon</p>
-                  <p className="text-sm text-amber-700">
-                    Payment processing will be available once Stripe is connected.
-                  </p>
-                </div>
+          <Card className="border-brand-green/30 bg-brand-green/10 shadow-field">
+            <CardContent className="space-y-4 p-8">
+              <div className="text-xs uppercase tracking-[0.18em] text-brand-brown/60">
+                Price
               </div>
-              <Button className="w-full" disabled>
-                Subscribe Now
+              <div className="font-heading text-5xl text-brand-ink">£25</div>
+              <p className="text-sm leading-7 text-brand-brown/80">
+                Billed yearly per premium listing. In demo mode, checkout upgrades your
+                account immediately so you can test the workflow end to end.
+              </p>
+              <Button
+                className="w-full rounded-full bg-brand-ink text-white hover:bg-brand-brown"
+                onClick={handleCheckout}
+                disabled={isCheckoutLoading}
+              >
+                {isCheckoutLoading ? "Starting checkout..." : "Upgrade now"}
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
-    </Layout>
+    </section>
   );
 }

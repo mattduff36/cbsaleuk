@@ -1,9 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { getSearchSuggestions } from "@/lib/data";
 
-// Stub: Return empty suggestions since no DB is connected yet
-export async function GET() {
-  return NextResponse.json({
-    listings: [],
-    locations: []
-  });
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const query = searchParams.get("q") || "";
+
+  if (query.trim().length < 2) {
+    return NextResponse.json({ listings: [], locations: [] });
+  }
+
+  return NextResponse.json(await getSearchSuggestions(query));
 }

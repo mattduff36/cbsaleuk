@@ -1,9 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth-service";
 
-// Stub: Return 401 since no DB is connected yet
 export async function GET() {
-  return NextResponse.json(
-    { message: 'Authentication not available yet' },
-    { status: 401 }
-  );
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return NextResponse.json(
+      { message: "Authentication required." },
+      { status: 401 },
+    );
+  }
+
+  return NextResponse.json(user);
 }

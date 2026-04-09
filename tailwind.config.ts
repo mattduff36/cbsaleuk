@@ -1,11 +1,11 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
   content: [
     "./src/app/**/*.{js,jsx,ts,tsx}",
     "./src/components/**/*.{js,jsx,ts,tsx}",
     "./src/contexts/**/*.{js,jsx,ts,tsx}",
+    "./src/lib/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
@@ -32,6 +32,14 @@ export default {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        brand: {
+          brown: "#4A3428",
+          green: "#7FFF00",
+          sky: "#87CEEB",
+          cream: "#F5F0E8",
+          ink: "#16120E",
+          mist: "#E7EDF0",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -67,6 +75,10 @@ export default {
         },
       },
       keyframes: {
+        float: {
+          "0%, 100%": { transform: "translate3d(0, 0, 0)" },
+          "50%": { transform: "translate3d(0, -10px, 0)" },
+        },
         "accordion-down": {
           from: {
             height: "0",
@@ -85,8 +97,12 @@ export default {
         },
       },
       animation: {
+        float: "float 8s ease-in-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      boxShadow: {
+        field: "0 24px 80px rgba(24, 18, 12, 0.14)",
       },
     },
   },

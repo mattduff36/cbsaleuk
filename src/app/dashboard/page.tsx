@@ -4,18 +4,16 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/contexts/auth-context";
 import { CarBootSale } from "@/types";
-import { PlusCircle, Settings, Crown } from "lucide-react";
+import { Crown, PlusCircle, ShieldCheck } from "lucide-react";
 
 export default function Dashboard() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push("/login");
@@ -23,17 +21,20 @@ export default function Dashboard() {
   }, [authLoading, isAuthenticated, router]);
 
   const { data: userListings, isLoading: listingsLoading } = useQuery<CarBootSale[]>({
-    queryKey: ['/api/car-boot-sales/user'],
+    queryKey: ["/api/car-boot-sales/user"],
+    queryFn: async () => {
+      const response = await fetch("/api/car-boot-sales/user");
+      if (!response.ok) {
+        throw new Error("Unable to load your listings.");
+      }
+      return response.json();
+    },
     enabled: isAuthenticated,
   });
 
   if (authLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <p>Loading...</p>
-        </div>
-      </Layout>
+      <div className="px-4 py-16 text-center">Loading dashboard...</div>
     );
   }
 
@@ -42,67 +43,94 @@ export default function Dashboard() {
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+    <section className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-8">
+        <div className="glass-card flex flex-col justify-between gap-6 p-8 lg:flex-row lg:items-end">
           <div>
-            <h1 className="font-heading text-3xl font-bold text-gray-900">
-              Welcome, {user?.username}!
+            <div className="text-xs uppercase tracking-[0.18em] text-brand-brown/60">
+              Organiser dashboard
+            </div>
+            <h1 className="font-heading mt-3 text-5xl font-semibold text-brand-ink">
+              Welcome back, {user?.fullName || user?.username}
             </h1>
-            <p className="text-gray-600 mt-1">Manage your car boot sale listings</p>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-brand-brown/80">
+              Manage your listing portfolio, premium status, and moderation-ready event
+              details from one place.
+            </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-3">
             {!user?.isPremium && (
               <Link href="/subscribe">
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 rounded-full border-brand-brown/20 bg-white">
                   <Crown className="h-4 w-4" />
                   Upgrade to Premium
                 </Button>
               </Link>
             )}
             <Link href="/list-sale">
-              <Button className="gap-2">
+              <Button className="gap-2 rounded-full bg-brand-ink text-white hover:bg-brand-brown">
                 <PlusCircle className="h-4 w-4" />
                 Add New Listing
               </Button>
             </Link>
+            {user?.role === "admin" && (
+              <Link href="/admin">
+                <Button variant="outline" className="gap-2 rounded-full border-brand-brown/20 bg-white">
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin panel
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
         {user?.isPremium && (
-          <Card className="mb-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-            <CardContent className="p-4 flex items-center gap-3">
-              <Crown className="h-6 w-6 text-yellow-600" />
+          <Card className="border-brand-green/30 bg-brand-green/10">
+            <CardContent className="flex items-center gap-3 p-5">
+              <Crown className="h-6 w-6 text-brand-ink" />
               <div>
-                <p className="font-semibold text-yellow-800">Premium Member</p>
-                <p className="text-sm text-yellow-700">You have access to all premium features</p>
+                <p className="font-semibold text-brand-ink">Premium organiser active</p>
+                <p className="text-sm text-brand-brown/75">
+                  Your profile can use richer media, event announcements, and premium
+                  trust signals.
+                </p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Listings</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-brand-brown/10 bg-white shadow-field">
+          <CardContent className="p-8">
+            <div className="mb-6">
+              <div className="text-xs uppercase tracking-[0.18em] text-brand-brown/60">
+                Your listings
+              </div>
+              <h2 className="font-heading mt-2 text-3xl text-brand-ink">
+                Active portfolio
+              </h2>
+            </div>
             {listingsLoading ? (
-              <p className="text-gray-600">Loading your listings...</p>
+              <p className="text-brand-brown/70">Loading your listings...</p>
             ) : userListings && userListings.length > 0 ? (
               <div className="space-y-4">
                 {userListings.map((listing) => (
-                  <div key={listing.id} className="flex justify-between items-center p-4 border rounded-lg">
+                  <div
+                    key={listing.id}
+                    className="flex flex-col gap-4 rounded-[1.5rem] border border-brand-brown/10 bg-brand-cream p-5 md:flex-row md:items-center md:justify-between"
+                  >
                     <div>
-                      <h3 className="font-semibold">{listing.name}</h3>
-                      <p className="text-sm text-gray-600">{listing.location}</p>
+                      <h3 className="font-heading text-2xl text-brand-ink">{listing.name}</h3>
+                      <p className="mt-1 text-sm text-brand-brown/70">{listing.location}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Link href={`/sale/${listing.id}`}>
-                        <Button variant="outline" size="sm">View</Button>
+                      <Link href={`/sale/${listing.slug || listing.id}`}>
+                        <Button variant="outline" size="sm" className="rounded-full border-brand-brown/20 bg-white">
+                          View
+                        </Button>
                       </Link>
                       <Link href={`/edit-listing/${listing.id}`}>
-                        <Button variant="outline" size="sm">
-                          <Settings className="h-4 w-4" />
+                        <Button variant="outline" size="sm" className="rounded-full border-brand-brown/20 bg-white">
+                          Edit
                         </Button>
                       </Link>
                     </div>
@@ -110,16 +138,20 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">You haven&apos;t created any listings yet.</p>
+              <div className="py-8 text-center">
+                <p className="mb-4 text-brand-brown/75">
+                  You haven&apos;t created any listings yet.
+                </p>
                 <Link href="/list-sale">
-                  <Button>Create Your First Listing</Button>
+                  <Button className="rounded-full bg-brand-ink text-white hover:bg-brand-brown">
+                    Create Your First Listing
+                  </Button>
                 </Link>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </section>
   );
 }

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import Layout from "@/components/layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ListingEditor } from "@/components/listing-editor";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle } from "lucide-react";
+import { CarBootSale } from "@/types";
 
 export default function EditListing() {
   const params = useParams();
@@ -20,49 +20,40 @@ export default function EditListing() {
       toast({
         title: "Login Required",
         description: "Please log in to edit your listing.",
-        variant: "default",
       });
       router.push("/login");
     }
   }, [isLoading, isAuthenticated, router, toast]);
 
+  const { data: listing, isLoading: listingLoading } = useQuery<CarBootSale>({
+    queryKey: [`/api/car-boot-sales/${id}`],
+    queryFn: async () => {
+      const response = await fetch(`/api/car-boot-sales/${id}`);
+      if (!response.ok) {
+        throw new Error("Unable to load listing.");
+      }
+      return response.json();
+    },
+    enabled: isAuthenticated && Boolean(id),
+  });
+
   if (isLoading) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <p>Loading...</p>
-        </div>
-      </Layout>
-    );
+    return <div className="px-4 py-16 text-center">Loading organiser workspace...</div>;
   }
 
   if (!isAuthenticated) {
     return null;
   }
 
+  if (listingLoading || !listing) {
+    return <div className="px-4 py-16 text-center">Loading listing...</div>;
+  }
+
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Edit Listing #{id}</CardTitle>
-            <CardDescription>
-              Update your car boot sale details
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
-              <div>
-                <p className="font-medium text-amber-800">Coming Soon</p>
-                <p className="text-sm text-amber-700">
-                  The edit form will be available once the database is connected.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    <section className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl rounded-[2rem] border border-brand-brown/10 bg-white p-8 shadow-field">
+        <ListingEditor mode="edit" listing={listing} />
       </div>
-    </Layout>
+    </section>
   );
 }

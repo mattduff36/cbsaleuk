@@ -1,0 +1,10 @@
+client/
+server/
+shared/
+drizzle.config.ts
+vite.config.ts
+src/components/dashboard-weather-forecast.tsx
+src/components/photo-gallery.tsx
+src/components/google-maps-autocomplete.tsx
+src/components/simple-google-autocomplete.tsx
+src/components/layout.tsx

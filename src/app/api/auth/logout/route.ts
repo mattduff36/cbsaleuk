@@ -1,6 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { SESSION_COOKIE_NAME, logoutDemoUser } from "@/lib/auth-service";
 
-// Stub: Return success even though no session exists
 export async function POST() {
-  return NextResponse.json({ message: 'Logged out' });
+  await logoutDemoUser();
+
+  const response = NextResponse.json({ message: "Logged out" });
+  response.cookies.delete(SESSION_COOKIE_NAME);
+  return response;
 }

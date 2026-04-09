@@ -1,25 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { getWeatherSummary } from "@/lib/weather";
 
-// Stub: Return mock weather summary since WeatherKit is not connected yet
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const dayOfWeek = searchParams.get('dayOfWeek');
+  const lat = Number(searchParams.get("lat") || "53.8008");
+  const lon = Number(searchParams.get("lon") || "-1.5491");
+  const dayOfWeek =
+    (searchParams.get("dayOfWeek") as "saturday" | "sunday" | null) || "saturday";
 
-  // Return mock weather data
-  return NextResponse.json({
-    tempC: dayOfWeek === 'saturday' ? 14 : 16,
-    tempMaxC: dayOfWeek === 'saturday' ? 17 : 19,
-    tempMinC: dayOfWeek === 'saturday' ? 11 : 13,
-    feelsLikeC: dayOfWeek === 'saturday' ? 13 : 15,
-    conditionCode: 'partly_cloudy',
-    iconId: 801,
-    precipitationChance: 25,
-    windSpeedMph: 10,
-    humidity: 60,
-    forecast_meta: {
-      is_forecast: true,
-      target_day: dayOfWeek,
-      source: 'stub'
-    }
-  });
+  return NextResponse.json(getWeatherSummary(lat, lon, dayOfWeek));
 }
