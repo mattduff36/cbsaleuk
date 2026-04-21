@@ -40,24 +40,15 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-ink/85 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="flex min-w-0 items-center gap-3">
-          <div className="relative h-11 w-11 overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-[0_12px_32px_rgba(0,0,0,0.35)]">
-            <Image
-              src="/brand/logo.png"
-              alt={BRAND.name}
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-          <div className="hidden min-w-0 sm:block">
-            <div className="truncate text-base font-semibold text-white">
-              {BRAND.name}
-            </div>
-            <div className="truncate text-[10px] uppercase tracking-[0.22em] text-brand-green/80">
-              Trusted UK car boot listings
-            </div>
-          </div>
+        <Link href="/" className="flex min-w-0 items-center">
+          <Image
+            src="/brand/wordmark.png"
+            alt={BRAND.name}
+            width={420}
+            height={84}
+            priority
+            className="h-9 w-auto object-contain sm:h-10"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">

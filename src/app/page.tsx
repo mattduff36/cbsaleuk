@@ -1,98 +1,55 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BadgeCheck, ShieldCheck } from "lucide-react";
 import { BlogCard } from "@/components/blog-card";
 import ListingCard from "@/components/listing-card";
 import { LiveSearch } from "@/components/live-search";
 import { Button } from "@/components/ui/button";
-import { BRAND, HOME_FEATURES, TIER_FEATURES } from "@/lib/brand";
-import {
-  getBlogPosts,
-  getFeaturedListings,
-  getHomepageStats,
-} from "@/lib/data";
+import { BRAND, TIER_FEATURES } from "@/lib/brand";
+import { getBlogPosts, getFeaturedListings } from "@/lib/data";
 
 export default async function Home() {
-  const [featuredSales, blogPosts, stats] = await Promise.all([
+  const [featuredSales, blogPosts] = await Promise.all([
     getFeaturedListings(),
     getBlogPosts(),
-    getHomepageStats(),
   ]);
 
   return (
     <div className="noise-bg">
       <section className="relative overflow-hidden px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-10 lg:px-8 lg:pb-20">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="hero-panel relative min-h-[calc(100svh-7rem)] overflow-hidden rounded-[2rem] px-5 py-8 text-white shadow-field sm:px-8 sm:py-10 lg:min-h-0 lg:px-10 lg:py-14">
+        <div className="mx-auto max-w-7xl">
+          <div className="hero-panel relative overflow-hidden rounded-[2rem] px-5 py-8 text-white shadow-field sm:px-8 sm:py-10 lg:px-12 lg:py-14">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(127,255,0,0.16),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(135,206,235,0.22),transparent_28%)]" />
-            <div className="relative z-10 mx-auto flex min-h-full max-w-3xl flex-col justify-center lg:mx-0">
-              <div className="mb-4 inline-flex items-center gap-2 self-start rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/85 sm:text-xs">
-                <ShieldCheck className="h-4 w-4 text-brand-green" />
+            <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center">
+              <div className="mb-6">
+                <div className="relative mt-4 inline-block">
+                  <Image
+                    src="/brand/wordmark.png"
+                    alt={BRAND.name}
+                    width={420}
+                    height={84}
+                    priority
+                    className="h-auto w-[12rem] sm:w-[16rem]"
+                  />
+                  <div className="absolute bottom-[0.15rem] left-0 text-[7px] font-semibold uppercase tracking-[0.26em] text-brand-green sm:bottom-1 sm:left-1 sm:text-[7.5px]">
+                    UK car boot listings
+                  </div>
+                </div>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.24em] text-white/88 shadow-[0_20px_40px_rgba(0,0,0,0.2)] backdrop-blur-md sm:text-[11px]">
+                <ShieldCheck className="h-3.5 w-3.5 text-brand-green" />
                 Clean, verified, ad-free discovery
               </div>
-              <div className="mb-6">
-                <div className="text-[11px] uppercase tracking-[0.28em] text-brand-green/80 sm:text-xs">
-                  UK car boot listings
-                </div>
-                <div className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-                  {BRAND.name}
-                </div>
-              </div>
-              <h1 className="font-heading hidden max-w-[7ch] text-[clamp(1.9rem,7.6vw,3rem)] font-semibold leading-[0.98] sm:block sm:max-w-[10ch] sm:text-6xl">
-                Find the right UK car boot sale before the first kettle boils.
+              <h1 className="font-heading mt-6 max-w-[11ch] text-[clamp(1.9rem,7.6vw,3rem)] font-semibold leading-[0.98] sm:max-w-[13ch] sm:text-[3.5rem] lg:text-[4.5rem]">
+                Find the right UK car boot sale.
               </h1>
-              <p className="mt-5 hidden max-w-xl text-base leading-8 text-white/80 sm:mt-6 sm:block sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/80 sm:mt-6 sm:text-lg">
                 Search by place, distance, and weekend day. Check the practical details,
                 spot verified organisers, and browse a cleaner marketplace than the old
                 ad-heavy directories.
               </p>
-              <div className="mx-auto mt-6 w-full max-w-xl rounded-[1.75rem] border border-white/15 bg-white/90 p-5 text-brand-ink shadow-field sm:mt-8 lg:mx-0 lg:max-w-3xl">
+              <div className="mt-6 w-full max-w-3xl rounded-[1.75rem] border border-white/15 bg-white/90 p-5 text-brand-ink shadow-field sm:mt-8">
                 <LiveSearch />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-5">
-            <div className="glass-card p-6">
-              <div className="text-xs uppercase tracking-[0.18em] text-brand-brown/60">
-                Marketplace pulse
-              </div>
-              <div className="mt-5 grid grid-cols-2 gap-4">
-                {stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="rounded-[1.25rem] bg-brand-cream p-4"
-                  >
-                    <div className="font-heading text-4xl text-brand-ink">
-                      {stat.value}
-                    </div>
-                    <div className="mt-2 text-xs uppercase tracking-[0.18em] text-brand-brown/60">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="glass-card p-6">
-              <div className="mb-4 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-brand-brown/60">
-                <Sparkles className="h-4 w-4 text-brand-green" />
-                Why it feels different
-              </div>
-              <div className="space-y-4">
-                {HOME_FEATURES.slice(0, 3).map((feature) => (
-                  <div
-                    key={feature.title}
-                    className="rounded-[1.25rem] border border-brand-brown/10 bg-white/80 p-4"
-                  >
-                    <div className="font-heading text-xl text-brand-ink">
-                      {feature.title}
-                    </div>
-                    <p className="mt-2 text-sm leading-7 text-brand-brown/75">
-                      {feature.description}
-                    </p>
-                  </div>
-                ))}
               </div>
             </div>
           </div>

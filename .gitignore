@@ -53,3 +53,6 @@ vite.config.ts
 replit.md
 .replit
 replit.nix
+
+# Supabase CLI local state
+supabase/.temp/

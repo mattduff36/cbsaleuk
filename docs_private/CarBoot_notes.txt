@@ -1,0 +1,49 @@
+map
+profiles
+- build
+- images
+- signup
+- email
+
+admin pages
+/studios page (ish)
+
+
+new bits:
+weather
+
+
+
+
+sync GitHub repo?
+
+
+
+
+
+Create a PRD for a new site, similar in terms of backend to Voiceover Studio Finder [see attached workspace] and with the following scope. The template site has already been cloned and converted to Next.js, and is on the connected GitHub repo.
+
+Here is the overall idea of the site. Use this information, along with the features, functions, and components used in Voiceover Studio Finder's codebase as a guide to how we would like to achieve this task.
+
+This will be a very large, in-depth development session, so keep this in mind, be aware of your content window, and create suitable PRD (or PRD's) that we can implement in stages.
+
+Use best practices, and the MCP servers installed to help you with this project.
+
+Here is the overall idea:
+
+
+"We are creating a Car Boot Sale Finder. The current ones available on the web are very cluttered, not easy to use and full of Google Ads. We want to create an easy to use site, no adverts and free to list. The idea would be to allow people to list for free and Find a car boot for free and then eventually build in some paid elements.
+ 
+The home page should start with a simple Search bar with a mile/radius filter (the same as studio finder)
+ 
+The test one we've built uses Google Maps API for location and searching and also APPLE APPS API to get the weather. 
+The idea is that a user searches for a car boot sale near them, hit's search and then, similar to Studio finder it would show listings. 
+ 
+When they open the listing the profile page would have pictures, the map and location with directions and also the weather API would show the Weather for the coming Saturday and Sunday concentrate on the period from 6am - 12pm, so a user can decide what time to head down if wating for good weather. 
+
+The profile would allow the user to add details and tick boxes of what facilities they provide like free parking, food and drink, toilets, pet friendly etc. How much to enter, how much to sell (car or van price), indoor or outdoor,  links to their social media pages etc
+Also the option to add to the user searching's calendar. 
+
+We would like to re-use any useful components from our other codebase 'Voiceover Studio Finder'. I can give you read-only access to this if required, or provide the GitHub repo URL."
+
+Ask me any amount of qualifying questions before you begin.
